@@ -10,10 +10,12 @@ shinyUI(pageWithSidebar(
       id = "tabs",
       tabPanel(
         "Find Mentions",
+        helpText("Enter your API key for BoardReader"),
         textInput("apikey", "API Key:", ""),
+        helpText("Enter the terms for your search"),
         textInput("searchquery", "Query:", ""),
-        helpText("Enter a search term, and choose what channel to search"),
-        actionButton("goButton", "Search")
+        radioButtons("searchapi", "Area to search:", c("Boards" = "Boards", "Blogs" = "Blogs", "News" = "News", "Video" = "Video", "Reviews" = "Reviews")),
+        actionButton("goButton", "Search", icon = icon("search"))
       ),
       tabPanel(
         "Word count",
@@ -22,6 +24,8 @@ shinyUI(pageWithSidebar(
         actionButton("countButton", "Search")
         )
     ),
+      helpText(""),
+      helpText("To download the results as a CSV, click below"),
               downloadLink("downloadData", "Download")
   ),
   

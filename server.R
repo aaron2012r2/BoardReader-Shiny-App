@@ -12,7 +12,7 @@ br.response <- ""
   output$table <- renderTable({
 
     input$goButton
-    br.response <<- isolate(board.reader.result(queryTerm = input$searchquery, search_api = "Reviews", api_key = input$apikey))
+    br.response <<- isolate(board.reader.result(queryTerm = input$searchquery, search_api = input$searchapi, api_key = input$apikey))
     table.result <- result.to.frame(br.response)
 
     })
