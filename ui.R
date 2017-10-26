@@ -19,6 +19,7 @@ shinyUI(pageWithSidebar(
       ),
       tabPanel(
         "Word count",
+        helpText("THIS FEATURE IS CURRENTLY UNAVAILABLE"),
         textInput("wordcountquery", "Terms:", "Enter terms here"),
         helpText("Enter terms to search for"),
         actionButton("countButton", "Search")
