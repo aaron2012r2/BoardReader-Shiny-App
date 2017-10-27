@@ -10,20 +10,22 @@ shinyUI(pageWithSidebar(
       id = "tabs",
       tabPanel(
         "Find Mentions",
+        helpText(""),
         helpText("Enter your API key for BoardReader"),
         textInput("apikey", "API Key:", ""),
         helpText("Enter the terms for your search"),
         textInput("searchquery", "Query:", ""),
+        helpText("Choose how many days back to search"),
+        sliderInput("daysbackslider", label = "Days Back", min = 30, 
+        max = 90, value = 30),
         radioButtons("searchapi", "Area to search:", c("Boards" = "Boards", "Blogs" = "Blogs", "News" = "News", "Video" = "Video", "Reviews" = "Reviews")),
-        actionButton("goButton", "Search", icon = icon("search"))
-      ),
-      tabPanel(
-        "Word count",
-        helpText("THIS FEATURE IS CURRENTLY UNAVAILABLE"),
-        textInput("wordcountquery", "Terms:", "Enter terms here"),
-        helpText("Enter terms to search for"),
-        actionButton("countButton", "Search")
-        )
+        helpText("Quick search for the first 100 results"),
+        actionButton("goButton", "Quick Search", icon = icon("search")),
+        helpText(""),
+        helpText(""),
+        helpText("To obtain all results, run a full search below"),
+        actionButton("goButtonFull", "Full Search", icon = icon("search"))
+      )
     ),
       helpText(""),
       helpText("To download the results as a CSV, click below"),
@@ -33,11 +35,14 @@ shinyUI(pageWithSidebar(
   mainPanel(
     h2("Results"),
     hr(),
+
+    uiOutput("topStats"),
+    hr(),
     
     uiOutput("table"),
     hr(),
     
-    h3("Content Description:"),
+    h3("Query and Debug Information:"),
     uiOutput("res")
     
   )

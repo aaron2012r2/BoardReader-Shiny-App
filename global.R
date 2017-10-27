@@ -2,17 +2,17 @@
 
 
 base_url <- "http://api.boardreader.com/v1/"
-search_api <- "Boards"
 end_search_url <- "/Search?key="
 term_query_prefix <- "&query="
-#criteria <- "&rt=json&body=full_text&highlight=0&limit=500"
-criteria <- "&limit=500&rt=json&body=full_text&highlight=0&filter_country=us&offset=0"
 
-board.reader.result <- function(queryTerm, search_api = "Boards", api_key) {
+board.reader.result <- function(queryTerm, search_api = "Boards", api_key, days_back = 30, offset = 0) {
 	if (queryTerm == "") {
 		""
 	} else {
     	queryTerm <- URLencode(queryTerm, reserved = TRUE)
+    	filter.from <- paste("&filter_date_from=", as.numeric(as.POSIXct(Sys.Date() - days_back)), sep = "")
+    	filter.to <- paste("&filter_date_to=", as.numeric(as.POSIXct(Sys.Date())), sep = "")
+    	criteria <- paste(filter.from, filter.to, "&limit=100&rt=json&body=full_text&highlight=0&filter_country=us&offset=", offset, sep = "")
     	send.url <- paste(base_url, search_api, end_search_url, api_key, term_query_prefix, queryTerm, criteria, sep = "")
     	response.set <- getURLContent(send.url)
     	response.set <- fromJSON(response.set)
@@ -23,7 +23,7 @@ board.reader.result <- function(queryTerm, search_api = "Boards", api_key) {
 result.to.frame <- function(query.results) {
 
 	if (!is.list(query.results)) {
-		""
+		data.frame(Startup.Message = "Hello! Search using the sidebar, and results will display here.")
 	} else {
 		query.results <- query.results$response
 		query.results <- query.results$Matches$Match
@@ -37,7 +37,7 @@ result.to.frame <- function(query.results) {
 format.describe <- function(http.response) {
 
 	if (!is.list(http.response)) {
-		""
+		"Additional information about your query will appear here, such as remaining queries, date range, and more."
 	} else {
 		queries.used <- as.numeric(http.response$response$RequestsUsed)
 		remaining.queries <- as.numeric(http.response$response$RequestsLimit)-queries.used
@@ -56,23 +56,32 @@ format.describe <- function(http.response) {
 
 }
 
+getTotal <- function(http.response) {
 
-# Word Count function
+	if (!is.list(http.response)) {
+		"0"
+	} else {
+		http.response$response$TotalFound
+	}
 
-get.freq.text <- function(text.source) {
+}
 
-    text.source <- tolower(text.source)
-    words.list <- strsplit(text.source, "\\W+", perl = TRUE)
-    words.vector <- unlist(words.list)
-    freq.list <- table(words.vector)
-    sorted.freq.list <- sort(freq.list, decreasing = TRUE)
-    sorted.freq.list <- sorted.freq.list[!(names(sorted.freq.list) %in% stopwords.list$words)]
 
-    # Pretty it up a little - I prefer vertical format
-    df.freq <- as.data.frame(cbind(names(sorted.freq.list), sorted.freq.list), row.names = "", stringsAsFactors = FALSE)
-    names(df.freq) <- c("word", "frequency")
-    df.freq$frequency <- as.numeric(df.freq$frequency)
-    df.freq <- df.freq[grep("^[a-z0-9]*$", df.freq$word, perl = TRUE),]
-    df.freq
-
+gramify <- function(text.source, gramnum = 2) {
+    tokenizer <- function(x) { NGramTokenizer(x, Weka_control(min = gramnum, max = gramnum)) }
+    text.source <- as.data.frame(sapply(text.source, tolower), stringsAsFactors = FALSE)
+    text.source <- as.data.frame(sapply(text.source, removeWords, stopwords("en")), stringsAsFactors = FALSE)
+    text.source <- as.data.frame(sapply(text.source, stripWhitespace), stringsAsFactors = FALSE)
+    thing.vectorsource <- VectorSource(text.source)
+    thing.corpus <- VCorpus(thing.vectorsource)
+    thing.dtm <- DocumentTermMatrix(thing.corpus, control = list(tokenize = tokenizer))
+    ngram_dtm_m <- as.matrix(thing.dtm)
+    freq <- colSums(ngram_dtm_m)
+    ngram_words <- names(freq)
+    df.words <- as.data.frame(cbind(ngram_words, freq), stringsAsFactors = FALSE)
+    names(df.words) <- c("term", "freq")
+    df.words$freq <- as.numeric(df.words$freq)
+    df.words <- df.words[order(df.words$freq, decreasing = TRUE),]
+    rownames(df.words) <- c(1:nrow(df.words))
+    df.words
 }
