@@ -67,21 +67,21 @@ getTotal <- function(http.response) {
 }
 
 
-gramify <- function(text.source, gramnum = 2) {
-    tokenizer <- function(x) { NGramTokenizer(x, Weka_control(min = gramnum, max = gramnum)) }
-    text.source <- as.data.frame(sapply(text.source, tolower), stringsAsFactors = FALSE)
-    text.source <- as.data.frame(sapply(text.source, removeWords, stopwords("en")), stringsAsFactors = FALSE)
-    text.source <- as.data.frame(sapply(text.source, stripWhitespace), stringsAsFactors = FALSE)
-    thing.vectorsource <- VectorSource(text.source)
-    thing.corpus <- VCorpus(thing.vectorsource)
-    thing.dtm <- DocumentTermMatrix(thing.corpus, control = list(tokenize = tokenizer))
-    ngram_dtm_m <- as.matrix(thing.dtm)
-    freq <- colSums(ngram_dtm_m)
-    ngram_words <- names(freq)
-    df.words <- as.data.frame(cbind(ngram_words, freq), stringsAsFactors = FALSE)
-    names(df.words) <- c("term", "freq")
-    df.words$freq <- as.numeric(df.words$freq)
-    df.words <- df.words[order(df.words$freq, decreasing = TRUE),]
-    rownames(df.words) <- c(1:nrow(df.words))
-    df.words
-}
+#gramify <- function(text.source, gramnum = 2) {
+#    tokenizer <- function(x) { NGramTokenizer(x, Weka_control(min = gramnum, max = gramnum)) }
+#    text.source <- as.data.frame(sapply(text.source, tolower), stringsAsFactors = FALSE)
+#    text.source <- as.data.frame(sapply(text.source, removeWords, stopwords("en")), stringsAsFactors = FALSE)
+#    text.source <- as.data.frame(sapply(text.source, stripWhitespace), stringsAsFactors = FALSE)
+#    thing.vectorsource <- VectorSource(text.source)
+#    thing.corpus <- VCorpus(thing.vectorsource)
+#    thing.dtm <- DocumentTermMatrix(thing.corpus, control = list(tokenize = tokenizer))
+#    ngram_dtm_m <- as.matrix(thing.dtm)
+#    freq <- colSums(ngram_dtm_m)
+#    ngram_words <- names(freq)
+#    df.words <- as.data.frame(cbind(ngram_words, freq), stringsAsFactors = FALSE)
+#    names(df.words) <- c("term", "freq")
+#    df.words$freq <- as.numeric(df.words$freq)
+#    df.words <- df.words[order(df.words$freq, decreasing = TRUE),]
+#    rownames(df.words) <- c(1:nrow(df.words))
+#    df.words
+#}

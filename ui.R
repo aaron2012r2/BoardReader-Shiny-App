@@ -20,11 +20,11 @@ shinyUI(pageWithSidebar(
         max = 90, value = 30),
         radioButtons("searchapi", "Area to search:", c("Boards" = "Boards", "Blogs" = "Blogs", "News" = "News", "Video" = "Video", "Reviews" = "Reviews")),
         helpText("Quick search for the first 100 results"),
-        actionButton("goButton", "Quick Search", icon = icon("search")),
-        helpText(""),
-        helpText(""),
-        helpText("To obtain all results, run a full search below"),
-        actionButton("goButtonFull", "Full Search", icon = icon("search"))
+        actionButton("goButton", "Quick Search", icon = icon("search"))
+#        helpText(""),
+#        helpText(""),
+#        helpText("To obtain all results, run a full search below"),
+#        actionButton("goButtonFull", "Full Search", icon = icon("search"))
       )
     ),
       helpText(""),

@@ -4,9 +4,9 @@ library(RCurl)
 library(stringi)
 library(stringr)
 library(rjson)
-library(qdap)
-library(tm)
-library(RWeka)
+#library(qdap)
+#library(tm)
+#library(RWeka)
 
 shinyServer(function(input, output) {
 
